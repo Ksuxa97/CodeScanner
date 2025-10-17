@@ -9,12 +9,13 @@ import SwiftUI
 
 @main
 struct CodeScannerApp: App {
-    let persistenceController = PersistenceController.shared
+    @StateObject private var coordinator: Coordinator = Coordinator()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            MainView()
+                .environmentObject(coordinator)
         }
     }
 }
+
