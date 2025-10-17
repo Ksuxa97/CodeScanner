@@ -36,10 +36,10 @@ final class TorchController {
 
         view.addSubview(button)
         NSLayoutConstraint.activate([
-            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
-            button.widthAnchor.constraint(equalToConstant: 56),
-            button.heightAnchor.constraint(equalToConstant: 44)
+            button.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            button.widthAnchor.constraint(equalToConstant: 60),
+            button.heightAnchor.constraint(equalToConstant: 60)
         ])
 
         self.button = button
@@ -48,8 +48,8 @@ final class TorchController {
     @MainActor
     func updateButtonState(isOn: Bool) {
         guard let button else { return }
-        let config = UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)
-        let imageName = isOn ? "flashlight.off.circle" : "flashlight.on.circle"
+        let config = UIImage.SymbolConfiguration(pointSize: 50, weight: .medium)
+        let imageName = isOn ? "flashlight.off.circle.fill" : "flashlight.on.circle"
         button.setImage(UIImage(systemName: imageName, withConfiguration: config), for: .normal)
     }
 }
