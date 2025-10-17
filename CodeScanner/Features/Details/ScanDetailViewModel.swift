@@ -13,16 +13,19 @@ final class ScanDetailViewModel: ObservableObject {
     @Published var editingName: String
     @Published var showShare = false
 
-    init(code: ScannedCodeModel) {
+    private var codeStorage: StorageManagerProtocol
+
+    init(code: ScannedCodeModel, storage: StorageManagerProtocol) {
+        self.codeStorage = storage
         self.scan = code
         self.editingName = code.customName ?? ""
     }
 
     func formattedDate(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.dateStyle = .medium
-        f.timeStyle = .short
-        return f.string(from: date)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 
     func saveName(onUpdate: (() -> Void)? = nil) {

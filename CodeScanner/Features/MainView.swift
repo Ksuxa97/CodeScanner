@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var scannerVM = ScannerViewModel()
-    @StateObject private var listVM = ScanListViewModel()
+    @StateObject private var scannerVM = ScannerViewModel(storage: StorageManager.shared)
+    @StateObject private var listVM = ScanListViewModel(storage: StorageManager.shared)
     @EnvironmentObject private var coordinator: Coordinator
 
     var body: some View {
@@ -46,15 +46,13 @@ struct MainView: View {
                     }
                 }
             .sheet(item: $listVM.selectedCode) { code in
-                let detailVM = ScanDetailViewModel(code: code)
+                let detailVM = ScanDetailViewModel(code: code, storage: StorageManager.shared)
                 ScanDetailView(viewModel: detailVM) {
                     Task {
                         await listVM.loadScans()
                     }
                 }
-                .environmentObject(coordinator)
             }
         }
-        .navigationBarHidden(false)
     }
 }

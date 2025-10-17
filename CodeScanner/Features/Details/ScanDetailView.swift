@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ScanDetailView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var coordinator: Coordinator
     @ObservedObject var viewModel: ScanDetailViewModel
     var onUpdate: (() -> Void)?
 

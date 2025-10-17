@@ -19,7 +19,7 @@ final class ScannerViewModel: ObservableObject {
     private var codeStorage: StorageManagerProtocol
     private var recentlyScannedCodes = Set<String>()
 
-    init(storage: StorageManagerProtocol = StorageManager.shared) {
+    init(storage: StorageManagerProtocol) {
         self.codeStorage = storage
     }
 
@@ -37,6 +37,8 @@ final class ScannerViewModel: ObservableObject {
         lastScanned = nil
         errorMessage = nil
     }
+
+    // MARK: - Private Methods
 
     private func processScanned(code: String, type: CodeType) async {
         let id = UUID()

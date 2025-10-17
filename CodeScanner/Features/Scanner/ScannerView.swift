@@ -10,22 +10,14 @@ import AVFoundation
 
 struct ScannerView: UIViewControllerRepresentable {
     @ObservedObject var viewModel: ScannerViewModel
-    private let sessionManager = CameraSessionManager()
-
-    func makeCoordinator() -> CameraCoordinator {
-        CameraCoordinator(viewModel: viewModel, sessionManager: sessionManager)
-    }
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        let vc = UIViewController()
-        context.coordinator.setupUI(on: vc.view)
-        return vc
-    }
+    private let cameraService = CameraService()
 
     func alertOverlay() -> some View {
         EmptyView()
-            .alert("Нет доступа к камере",
-                   isPresented: $viewModel.showingPermissionAlert) {
+            .alert(
+                "Нет доступа к камере",
+                isPresented: $viewModel.showingPermissionAlert
+            ) {
                 Button("Настройки") {
                     if let url = URL(string: UIApplication.openSettingsURLString) {
                         UIApplication.shared.open(url)
@@ -33,9 +25,20 @@ struct ScannerView: UIViewControllerRepresentable {
                 }
                 Button("Отмена", role: .cancel) {}
             } message: {
-                Text("Разрешите доступ к камере в настройках, чтобы использовать сканер.")
+                Text(viewModel.errorMessage ?? "Разрешите доступ к камере в настройках, чтобы использовать сканер.")
             }
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+    func makeCoordinator() -> CameraPreviewController {
+        CameraPreviewController(viewModel: viewModel, cameraService: cameraService)
+    }
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        let controller = UIViewController()
+        context.coordinator.configure(on: controller.view)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    }
 }

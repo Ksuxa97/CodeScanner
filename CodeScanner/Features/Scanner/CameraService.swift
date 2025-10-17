@@ -1,32 +1,30 @@
 //
-//  CameraSessionManager.swift
+//  CameraService.swift
 //  CodeScanner
 //
-//  Created by Kseniya Semenova on 16.10.2025.
+//  Created by Kseniya Semenova on 17.10.2025.
 //
 
 import AVFoundation
 import UIKit
 
-final class CameraSessionManager {
+final class CameraService {
 
-    private var session: AVCaptureSession?
-    private var previewLayer: AVCaptureVideoPreviewLayer?
     weak var metadataDelegate: AVCaptureMetadataOutputObjectsDelegate?
 
-    func configure(on view: UIView) {
+    private var session = AVCaptureSession()
+    private var previewLayer: AVCaptureVideoPreviewLayer?
+
+    func start(on view: UIView) {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         switch status {
         case .authorized:
-            startSession(on: view)
+            configureSession(on: view)
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { granted in
                 DispatchQueue.main.async {
-                    if granted {
-                        self.startSession(on: view)
-                    } else {
-                        NotificationCenter.default.post(name: .cameraPermissionDenied, object: nil)
-                    }
+                    granted ? self.configureSession(on: view)
+                            : NotificationCenter.default.post(name: .cameraPermissionDenied, object: nil)
                 }
             }
         case .denied, .restricted:
@@ -36,40 +34,9 @@ final class CameraSessionManager {
         }
     }
 
-    private func startSession(on view: UIView) {
-        let session = AVCaptureSession()
-        self.session = session
-
-        guard let device = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: device) else {
-            NotificationCenter.default.post(name: .cameraUnavailable, object: nil)
-            return
-        }
-
-        if session.canAddInput(input) { session.addInput(input) }
-
-        let output = AVCaptureMetadataOutput()
-        if session.canAddOutput(output) {
-            session.addOutput(output)
-            output.setMetadataObjectsDelegate(metadataDelegate, queue: DispatchQueue.main)
-            output.metadataObjectTypes = [.qr, .ean8, .ean13, .upce, .code128, .code39, .code93]
-        }
-
+    func stop() {
         DispatchQueue.global(qos: .userInitiated).async {
-            session.startRunning()
-            DispatchQueue.main.async {
-                let preview = AVCaptureVideoPreviewLayer(session: session)
-                preview.videoGravity = .resizeAspectFill
-                preview.frame = view.bounds
-                view.layer.insertSublayer(preview, at: 0)
-                self.previewLayer = preview
-            }
-        }
-    }
-
-    func stopSession() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            self.session?.stopRunning()
+            self.session.stopRunning()
         }
     }
 
@@ -88,7 +55,40 @@ final class CameraSessionManager {
             print("Torch error: \(error)")
         }
     }
+
+    // MARK: - Private Methods
+
+    private func configureSession(on view: UIView) {
+
+        guard let device = AVCaptureDevice.default(for: .video),
+              let input = try? AVCaptureDeviceInput(device: device) else {
+            NotificationCenter.default.post(name: .cameraUnavailable, object: nil)
+            return
+        }
+
+        if session.canAddInput(input) { session.addInput(input) }
+
+        let output = AVCaptureMetadataOutput()
+        if session.canAddOutput(output) {
+            session.addOutput(output)
+            output.setMetadataObjectsDelegate(metadataDelegate, queue: .main)
+            output.metadataObjectTypes = [.qr, .ean8, .ean13, .upce, .code128, .code39, .code93]
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self else { return }
+            self.session.startRunning()
+            DispatchQueue.main.async {
+                let preview = AVCaptureVideoPreviewLayer(session: self.session)
+                preview.videoGravity = .resizeAspectFill
+                preview.frame = view.bounds
+                view.layer.insertSublayer(preview, at: 0)
+                self.previewLayer = preview
+            }
+        }
+    }
 }
+
 
 // MARK: - Notifications
 extension Notification.Name {

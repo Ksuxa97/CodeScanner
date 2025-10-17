@@ -17,7 +17,7 @@ final class ScanListViewModel: ObservableObject {
 
     private var codeStorage: StorageManagerProtocol
 
-    init(storage: StorageManagerProtocol = StorageManager.shared) {
+    init(storage: StorageManagerProtocol) {
         self.codeStorage = storage
     }
 
