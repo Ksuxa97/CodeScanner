@@ -23,15 +23,12 @@ enum Endpoint {
     }
 }
 
-enum NetworkError: Error {
-    case invalidURL
-    case invalidResponse
-    case noDataFound
+protocol ApiServiceProtocol {
+    func fetchProduct(barcode: String) async throws ->
+    (title: String?, brand: String?, ingredients: String?, nutriScore: String?)
 }
 
-final class OpenFoodFactsService {
-    static let shared = OpenFoodFactsService()
-    private init() {}
+final class OpenFoodFactsService: ApiServiceProtocol {
 
     func fetchProduct(barcode: String) async throws -> (title: String?, brand: String?, ingredients: String?, nutriScore: String?) {
 

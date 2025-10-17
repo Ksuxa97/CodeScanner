@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var scannerVM = ScannerViewModel(storage: StorageManager.shared)
+    @StateObject private var scannerVM = ScannerViewModel(
+        storage: StorageManager.shared,
+        apiService: OpenFoodFactsService()
+    )
     @StateObject private var listVM = ScanListViewModel(storage: StorageManager.shared)
     @EnvironmentObject private var coordinator: Coordinator
 

@@ -63,6 +63,8 @@ final class ScanListViewModel: ObservableObject {
         return "\(typeString) - \(formattedDate(scan.date))"
     }
 
+    // MARK: - Private Methods
+
     private func deleteScan(at index: Int) async {
         guard scans.indices.contains(index) else { return }
 

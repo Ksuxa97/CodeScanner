@@ -17,10 +17,12 @@ final class ScannerViewModel: ObservableObject {
     @Published var isTorchOn = false
 
     private var codeStorage: StorageManagerProtocol
+    private var apiService: ApiServiceProtocol
     private var recentlyScannedCodes = Set<String>()
 
-    init(storage: StorageManagerProtocol) {
+    init(storage: StorageManagerProtocol, apiService: ApiServiceProtocol) {
         self.codeStorage = storage
+        self.apiService = apiService
     }
 
     func handleScanned(code: String, type: CodeType) {
@@ -45,7 +47,7 @@ final class ScannerViewModel: ObservableObject {
         var model = ScannedCodeModel(id: id, code: code, type: type, date: Date())
         if type == .barcode {
             do {
-                let info = try await OpenFoodFactsService.shared.fetchProduct(barcode: code)
+                let info = try await apiService.fetchProduct(barcode: code)
                 model.title = info.title
                 model.brand = info.brand
                 model.ingredients = info.ingredients

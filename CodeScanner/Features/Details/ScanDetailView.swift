@@ -38,6 +38,8 @@ struct ScanDetailView: View {
         }
     }
 
+    // MARK: - Private Methods
+
     private var infoSection: some View {
         Section(header: Text("Инфо")) {
             Text("Код: \(viewModel.scan.code)")
