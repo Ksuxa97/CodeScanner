@@ -17,6 +17,21 @@ struct ScanListView: View {
             }
             .onDelete(perform: deleteItems)
         }
+        .overlay(
+            Group {
+                if viewModel.scans.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                            .font(.system(size: 48))
+                            .foregroundColor(.gray)
+                        Text("Отсканируйте код")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                }
+            }
+        )
         .navigationTitle("Список кодов")
         .onAppear {
             Task {

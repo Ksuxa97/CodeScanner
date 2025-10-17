@@ -55,7 +55,6 @@ final class ScanListViewModel: ObservableObject {
         } else {
             return scan.title ?? defaultTitle(for: scan)
         }
-
     }
 
     func displaySubtitle(for scan: ScannedCodeModel) -> String {
@@ -72,7 +71,7 @@ final class ScanListViewModel: ObservableObject {
 
         do {
             try await codeStorage.delete(code: scanToDelete.code)
-            await loadScans() // Перезагружаем список
+            await loadScans()
         } catch {
             alertMessage = "Ошибка удаления: \(error.localizedDescription)"
         }
