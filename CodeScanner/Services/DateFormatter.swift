@@ -20,7 +20,3 @@ extension DateFormatter {
         return shortDateTimeFormatter.string(from: date)
     }
 }
-
-
-
-
