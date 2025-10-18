@@ -38,15 +38,24 @@ struct ScanListView: View {
                 await viewModel.loadScans()
             }
         }
-        .alert("Ошибка", isPresented: .constant(viewModel.alertMessage != nil)) {
-            Button("OK") {
-                viewModel.alertMessage = nil
-            }
+        .alert("Ошибка", isPresented: showAlert) {
+            Button("OK") { }
         } message: {
             if let message = viewModel.alertMessage {
                 Text(message)
             }
         }
+    }
+
+    private var showAlert: Binding<Bool> {
+        Binding(
+            get: { viewModel.alertMessage != nil },
+            set: {
+                if !$0 {
+                    viewModel.alertMessage = nil
+                }
+            }
+        )
     }
 
     // MARK: - Private Views
