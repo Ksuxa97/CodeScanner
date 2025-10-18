@@ -9,6 +9,7 @@ import AVFoundation
 import UIKit
 import Combine
 
+@MainActor
 final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 
     private let viewModel: ScannerViewModel
@@ -22,7 +23,6 @@ final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDel
         self.torchController = TorchController(viewModel: viewModel, cameraService: cameraService)
     }
 
-    @MainActor
     func configure(on view: UIView) {
         cameraService.metadataDelegate = self
         cameraService.start(on: view)
@@ -32,16 +32,16 @@ final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDel
         setupNotifications()
     }
 
-    func metadataOutput(_ output: AVCaptureMetadataOutput,
+    nonisolated func metadataOutput(_ output: AVCaptureMetadataOutput,
                         didOutput metadataObjects: [AVMetadataObject],
                         from connection: AVCaptureConnection) {
         guard let object = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
               let stringValue = object.stringValue else { return }
 
         let type: CodeType = (object.type == .qr) ? .qr : .barcode
-        cameraService.stop()
 
         Task { @MainActor [weak viewModel] in
+            cameraService.stop()
             viewModel?.handleScanned(code: stringValue, type: type)
         }
     }
@@ -66,7 +66,6 @@ final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDel
         ])
     }
 
-    @MainActor
     private func subscribeToTorchState() {
         viewModel.$isTorchOn
             .receive(on: RunLoop.main)
@@ -98,7 +97,6 @@ final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDel
         }
     }
 
-    @MainActor
     private func handleError(_ message: String) {
         viewModel.errorMessage = message
         viewModel.showingPermissionAlert = true

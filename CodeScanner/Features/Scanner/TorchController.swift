@@ -7,6 +7,7 @@
 
 import UIKit
 
+@MainActor
 final class TorchController {
 
     private weak var button: UIButton?
@@ -18,7 +19,7 @@ final class TorchController {
         self.cameraService = cameraService
     }
 
-    @MainActor
+
     func attach(to view: UIView) {
         let button = UIButton(type: .system)
         button.tintColor = .white
@@ -45,7 +46,7 @@ final class TorchController {
         self.button = button
     }
 
-    @MainActor
+
     func updateButtonState(isOn: Bool) {
         guard let button else { return }
         let config = UIImage.SymbolConfiguration(pointSize: 50, weight: .medium)
