@@ -14,21 +14,17 @@ final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDel
 
     private let viewModel: ScannerViewModel
     private let cameraService: CameraService
-    private let torchController: TorchController
     private var cancellables = Set<AnyCancellable>()
 
     init(viewModel: ScannerViewModel, cameraService: CameraService) {
         self.viewModel = viewModel
         self.cameraService = cameraService
-        self.torchController = TorchController(viewModel: viewModel, cameraService: cameraService)
     }
 
     func configure(on view: UIView) {
         cameraService.metadataDelegate = self
         cameraService.start(on: view)
         addOverlay(to: view)
-        torchController.attach(to: view)
-        subscribeToTorchState()
         setupNotifications()
     }
 
@@ -64,15 +60,6 @@ final class CameraPreviewController: NSObject, AVCaptureMetadataOutputObjectsDel
             overlay.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             overlay.heightAnchor.constraint(equalTo: overlay.widthAnchor, multiplier: 0.6)
         ])
-    }
-
-    private func subscribeToTorchState() {
-        viewModel.$isTorchOn
-            .receive(on: RunLoop.main)
-            .sink { [weak self] isOn in
-                self?.torchController.updateButtonState(isOn: isOn)
-            }
-            .store(in: &cancellables)
     }
 
     private func setupNotifications() {

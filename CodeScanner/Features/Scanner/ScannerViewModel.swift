@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import AVFoundation
+import SwiftUI
 
 @MainActor
 final class ScannerViewModel: ObservableObject {
@@ -18,11 +19,13 @@ final class ScannerViewModel: ObservableObject {
 
     private var codeStorage: StorageManagerProtocol
     private var apiService: ApiServiceProtocol
+    private var application: UIApplication
     private var recentlyScannedCodes = Set<String>()
 
-    init(storage: StorageManagerProtocol, apiService: ApiServiceProtocol) {
+    init(storage: StorageManagerProtocol, apiService: ApiServiceProtocol, app: UIApplication) {
         self.codeStorage = storage
         self.apiService = apiService
+        self.application = app
     }
 
     func handleScanned(code: String, type: CodeType) {
@@ -38,6 +41,12 @@ final class ScannerViewModel: ObservableObject {
     func resetScanState() {
         lastScanned = nil
         errorMessage = nil
+    }
+
+    func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            application.open(url)
+        }
     }
 
     // MARK: - Private Methods

@@ -8,7 +8,7 @@
 import AVFoundation
 import UIKit
 
-final class CameraService {
+final class CameraService: ObservableObject {
 
     weak var metadataDelegate: AVCaptureMetadataOutputObjectsDelegate?
 

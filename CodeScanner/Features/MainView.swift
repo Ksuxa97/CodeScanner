@@ -10,7 +10,8 @@ import SwiftUI
 struct MainView: View {
     @StateObject private var scannerVM = ScannerViewModel(
         storage: StorageManager.shared,
-        apiService: OpenFoodFactsService()
+        apiService: OpenFoodFactsService(),
+        app: UIApplication.shared
     )
     @StateObject private var listVM = ScanListViewModel(storage: StorageManager.shared)
     @EnvironmentObject private var coordinator: Coordinator
@@ -33,7 +34,6 @@ struct MainView: View {
                         ScannerView(viewModel: scannerVM)
                             .edgesIgnoringSafeArea(.all)
                             .background(scannerVM.showingPermissionAlert ? Color.black.opacity(0.5) : Color.clear)
-                            .overlay(ScannerView(viewModel: scannerVM).alertOverlay())
                             .onAppear() {
                                 scannerVM.resetScanState()
                             }
@@ -41,7 +41,7 @@ struct MainView: View {
                                 guard let code = code else { return }
                                 coordinator.pop()
                                 
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                DispatchQueue.main.async {
                                     self.listVM.selectScan(code)
                                     scannerVM.resetScanState()
                                 }
@@ -49,7 +49,11 @@ struct MainView: View {
                     }
                 }
             .sheet(item: $listVM.selectedCode) { code in
-                let detailVM = ScanDetailViewModel(code: code, storage: StorageManager.shared)
+                let detailVM = ScanDetailViewModel(
+                    code: code,
+                    storage: StorageManager.shared,
+                    app: UIApplication.shared
+                )
                 ScanDetailView(viewModel: detailVM) {
                     Task {
                         await listVM.loadScans()

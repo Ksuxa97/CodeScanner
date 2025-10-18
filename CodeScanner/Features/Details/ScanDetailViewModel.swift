@@ -14,11 +14,13 @@ final class ScanDetailViewModel: ObservableObject {
     @Published var showShare = false
 
     private var codeStorage: StorageManagerProtocol
+    private var application: UIApplication
 
-    init(code: ScannedCodeModel, storage: StorageManagerProtocol) {
+    init(code: ScannedCodeModel, storage: StorageManagerProtocol, app: UIApplication) {
         self.codeStorage = storage
         self.scan = code
         self.editingName = code.customName ?? ""
+        self.application = app
     }
 
     func saveName(onUpdate: (() -> Void)? = nil) {
@@ -48,7 +50,14 @@ final class ScanDetailViewModel: ObservableObject {
     func openURLIfPossible() {
         guard let raw = scan.rawContent,
               let url = URL(string: raw),
-              UIApplication.shared.canOpenURL(url) else { return }
-        UIApplication.shared.open(url)
+              application.canOpenURL(url) else { return }
+        application.open(url)
+    }
+
+    func shouldShowButton(_ text: String) -> Bool {
+        if let url = URL(string: text), application.canOpenURL(url) {
+            return true
+        }
+        return false
     }
 }

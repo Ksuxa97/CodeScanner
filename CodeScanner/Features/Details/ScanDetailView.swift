@@ -66,7 +66,7 @@ struct ScanDetailView: View {
             if let raw = viewModel.scan.rawContent {
                 Text(raw)
                     .lineLimit(nil)
-                if let url = URL(string: raw), UIApplication.shared.canOpenURL(url) {
+                if viewModel.shouldShowButton(raw) {
                     Button("Открыть ссылку") {
                         viewModel.openURLIfPossible()
                     }

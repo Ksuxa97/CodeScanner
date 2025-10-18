@@ -8,26 +8,49 @@
 import SwiftUI
 import AVFoundation
 
-struct ScannerView: UIViewControllerRepresentable {
+struct ScannerView: View {
     @ObservedObject var viewModel: ScannerViewModel
-    private let cameraService = CameraService()
+    @StateObject private var cameraService = CameraService()
 
-    func alertOverlay() -> some View {
-        EmptyView()
-            .alert(
-                "Нет доступа к камере",
-                isPresented: $viewModel.showingPermissionAlert
-            ) {
-                Button("Настройки") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
+    var body: some View {
+        ZStack {
+            CameraViewRepresentable(
+                viewModel: viewModel,
+                cameraService: cameraService
+            )
+            .edgesIgnoringSafeArea(.all)
+
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    TorchButton(
+                        viewModel: viewModel,
+                        cameraService: cameraService
+                    )
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 40)
                 }
-                Button("Отмена", role: .cancel) {}
-            } message: {
-                Text(viewModel.errorMessage ?? "Разрешите доступ к камере в настройках, чтобы использовать сканер.")
             }
+        }
+        .alert(
+            "Нет доступа к камере",
+            isPresented: $viewModel.showingPermissionAlert
+        ) {
+            Button("Настройки") {
+                viewModel.openSettings()
+            }
+            Button("Отмена", role: .cancel) {}
+        } message: {
+            Text(viewModel.errorMessage ?? "Разрешите доступ к камере в настройках, чтобы использовать сканер.")
+        }
     }
+}
+
+
+struct CameraViewRepresentable: UIViewControllerRepresentable {
+    @ObservedObject var viewModel: ScannerViewModel
+    let cameraService: CameraService
 
     func makeCoordinator() -> CameraPreviewController {
         CameraPreviewController(viewModel: viewModel, cameraService: cameraService)
@@ -39,6 +62,5 @@ struct ScannerView: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-    }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
