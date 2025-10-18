@@ -6,12 +6,20 @@
 //
 
 struct OFFProductResponse: Codable {
-    struct Product: Codable {
-        let product_name: String?
-        let brands: String?
-        let ingredients_text: String?
-        let nutriscore_grade: String?
-    }
     let status: Int
     let product: Product?
+}
+
+struct Product: Codable {
+    let name: String?
+    let brand: String?
+    let ingredients: String?
+    let nutriscore: String?
+
+    enum CodingKeys: String, CodingKey {
+        case name = "product_name"
+        case brand = "brands"
+        case ingredients = "ingredients_text"
+        case nutriscore = "nutriscore_grade"
+    }
 }

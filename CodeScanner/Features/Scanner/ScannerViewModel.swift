@@ -47,11 +47,11 @@ final class ScannerViewModel: ObservableObject {
         var model = ScannedCodeModel(id: id, code: code, type: type, date: Date())
         if type == .barcode {
             do {
-                let info = try await apiService.fetchProduct(barcode: code)
-                model.title = info.title
-                model.brand = info.brand
-                model.ingredients = info.ingredients
-                model.nutriScore = info.nutriScore
+                let product = try await apiService.fetchProduct(barcode: code)
+                model.title = product?.name
+                model.brand = product?.brand
+                model.ingredients = product?.ingredients
+                model.nutriScore = product?.nutriscore
             } catch {
                 print("OFF fetch failed: \(error.localizedDescription)")
             }

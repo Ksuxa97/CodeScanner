@@ -24,13 +24,12 @@ enum Endpoint {
 }
 
 protocol ApiServiceProtocol {
-    func fetchProduct(barcode: String) async throws ->
-    (title: String?, brand: String?, ingredients: String?, nutriScore: String?)
+    func fetchProduct(barcode: String) async throws -> Product?
 }
 
 final class OpenFoodFactsService: ApiServiceProtocol {
 
-    func fetchProduct(barcode: String) async throws -> (title: String?, brand: String?, ingredients: String?, nutriScore: String?) {
+    func fetchProduct(barcode: String) async throws -> Product? {
 
         guard let url = Endpoint.barcode(code: barcode).url else {
             throw URLError(.badURL)
@@ -44,9 +43,9 @@ final class OpenFoodFactsService: ApiServiceProtocol {
 
         let decoded = try JSONDecoder().decode(OFFProductResponse.self, from: data)
         if let product = decoded.product {
-            return (product.product_name, product.brands, product.ingredients_text, product.nutriscore_grade)
+            return (product)
         } else {
-            return (nil, nil, nil, nil)
+            return (nil)
         }
     }
 }
