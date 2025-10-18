@@ -44,7 +44,7 @@ struct ScanDetailView: View {
         Section(header: Text("Инфо")) {
             Text("Код: \(viewModel.scan.code)")
             Text("Тип: \(viewModel.scan.type == .qr ? "QR" : "Штрихкод")")
-            Text("Дата: \(viewModel.formattedDate(viewModel.scan.date))")
+            Text("Дата: \(DateFormatter.dateString(viewModel.scan.date))")
             TextField("Название (локальное)", text: $viewModel.editingName, onCommit: {
                 viewModel.saveName(onUpdate: onUpdate)
             })

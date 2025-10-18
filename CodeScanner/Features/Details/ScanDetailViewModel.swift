@@ -21,13 +21,6 @@ final class ScanDetailViewModel: ObservableObject {
         self.editingName = code.customName ?? ""
     }
 
-    func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-
     func saveName(onUpdate: (() -> Void)? = nil) {
         Task {
             do {

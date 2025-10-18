@@ -43,10 +43,6 @@ final class ScanListViewModel: ObservableObject {
         selectedCode = scan
     }
 
-    func clearSelection() {
-        selectedCode = nil
-    }
-
     // MARK: - Formatting
 
     func displayTitle(for scan: ScannedCodeModel) -> String {
@@ -59,7 +55,7 @@ final class ScanListViewModel: ObservableObject {
 
     func displaySubtitle(for scan: ScannedCodeModel) -> String {
         let typeString = scan.type == .qr ? "QR" : "Штрихкод"
-        return "\(typeString) - \(formattedDate(scan.date))"
+        return "\(typeString) - \(DateFormatter.dateString(scan.date))"
     }
 
     // MARK: - Private Methods
@@ -84,12 +80,5 @@ final class ScanListViewModel: ObservableObject {
         case .barcode:
             return scan.code
         }
-    }
-
-    private func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
     }
 }
